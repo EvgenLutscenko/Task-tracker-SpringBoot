@@ -1,6 +1,7 @@
 package com.ua.lutscenko.tasktracker.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,7 +30,7 @@ public class User implements UserDetails {
     private LocalDateTime registrationDate = LocalDateTime.now();
 
     @Column(name = "last_login_date")
-    private LocalDateTime lastLoginDate;
+    private LocalDateTime lastLoginDate = LocalDateTime.now();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
