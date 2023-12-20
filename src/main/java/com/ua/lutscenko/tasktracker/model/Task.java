@@ -28,8 +28,8 @@ public class Task {
     private LocalDateTime dueDate;
 
     @Column(name = "is_completed")
-    private boolean isCompleted = false;
+    private boolean isCompleted;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
