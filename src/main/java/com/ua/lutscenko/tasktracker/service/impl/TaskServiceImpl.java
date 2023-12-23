@@ -12,6 +12,7 @@ import com.ua.lutscenko.tasktracker.repo.TaskRepository;
 import com.ua.lutscenko.tasktracker.repo.UserRepository;
 import com.ua.lutscenko.tasktracker.service.TaskService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +46,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public List<TaskRespDto> findAll(String name) {
-        List<Task> allByUserEmail = taskRepository.findAllByUserEmail(name);
+    public List<TaskRespDto> findAll(Authentication authentication) {
+        if(isAdmin(authentication)){
+            List<Task> all = taskRepository.findAll();
+            updateCompletedStatus(all);
+
+            return all.stream()
+                    .map(taskMapper::toDto)
+                    .toList();
+        }
+
+        List<Task> allByUserEmail = taskRepository.findAllByUserEmail(authentication.getName());
         updateCompletedStatus(allByUserEmail);
 
         return allByUserEmail.stream()
@@ -122,5 +132,10 @@ public class TaskServiceImpl implements TaskService {
         if(target.getCreatedAt() == null){
             target.setCreatedAt(source.getCreatedAt());
         }
+    }
+
+    private boolean isAdmin(Authentication authentication){
+        return authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
     }
 }

@@ -8,8 +8,11 @@ import com.ua.lutscenko.tasktracker.model.User;
 import com.ua.lutscenko.tasktracker.repo.UserRepository;
 import com.ua.lutscenko.tasktracker.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -36,4 +39,23 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.toDto(user);
     }
+
+    @Override
+    @Transactional
+    public void deleteUser(String email, Authentication authentication) {
+        if(isAdmin(authentication)){
+            if(!userRepository.existsByEmail(email)){
+                throw new UsernameNotFoundException(
+                        "user with email: " + email + " not found"
+                );
+            }
+            userRepository.deleteUserByEmail(email);
+        }
+    }
+
+    private boolean isAdmin(Authentication authentication){
+        return authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+    }
+
 }

@@ -8,6 +8,7 @@ import com.ua.lutscenko.tasktracker.security.AuthenticationService;
 import com.ua.lutscenko.tasktracker.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public UserLoginRespDto login(@RequestBody @Valid UserLoginRequestDto requestDto){
+    public UserLoginRespDto login(@RequestBody @Valid UserLoginRequestDto requestDto, Authentication authentication){
         return authenticationService.authenticate(requestDto);
     }
 }

@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +28,10 @@ public class TaskController {
 
     @GetMapping
     public List<TaskRespDto> findAll(Authentication authentication){
-        return taskService.findAll(authentication.getName());
+//        if(isAdmin(authentication)){
+//            return taskService.findAllForAdmin();
+//        }
+        return taskService.findAll(authentication);
     }
 
     @PutMapping("/update")
@@ -39,4 +44,5 @@ public class TaskController {
         taskService.delete(taskId, authentication.getName());
         return ResponseEntity.ok("Task deleted successfully");
     }
+
 }
